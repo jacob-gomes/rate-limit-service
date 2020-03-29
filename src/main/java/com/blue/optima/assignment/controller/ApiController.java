@@ -9,12 +9,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blue.optima.assignment.controller.model.RecordDTO;
 import com.blue.optima.assignment.service.ApiService;
+import com.blue.optima.assignment.service.constants.ApiConstants;
 
 @Component
 @RestController
@@ -30,7 +32,8 @@ public class ApiController {
 	}
 
 	@GetMapping("")
-	public ResponseEntity<RecordDTO> getRecord(@RequestParam("id") String id) {
+	public ResponseEntity<RecordDTO> getRecord(@RequestParam("id") String id,
+			@RequestHeader(ApiConstants.HEADER_USED_ID) String userId) {
 		
 		RecordDTO recordDTO = apiService.getRecord(id);
 		
@@ -38,7 +41,8 @@ public class ApiController {
 	}
 	
 	@PostMapping("")
-	public ResponseEntity<String> createRecord(@RequestBody RecordDTO recordDTORequestBody) {
+	public ResponseEntity<String> createRecord(@RequestBody RecordDTO recordDTORequestBody,
+			@RequestHeader(ApiConstants.HEADER_USED_ID) String userId) {
 		
 		String id = apiService.createRecord(recordDTORequestBody);
 		
@@ -46,14 +50,16 @@ public class ApiController {
 	}
 	
 	@DeleteMapping("")
-	public ResponseEntity<?> deleteRecord(@RequestParam("id") String id) {		
+	public ResponseEntity<?> deleteRecord(@RequestParam("id") String id,
+			@RequestHeader(ApiConstants.HEADER_USED_ID) String userId) {		
 		apiService.deleteRecord(id);	
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
 	@PutMapping("")
 	public ResponseEntity<?> updateRecord(@RequestParam("id") String id,
-			@RequestBody RecordDTO recordDTORequestBody) {		
+			@RequestBody RecordDTO recordDTORequestBody,
+			@RequestHeader(ApiConstants.HEADER_USED_ID) String userId) {		
 		apiService.updateRecord(id,recordDTORequestBody);	
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
