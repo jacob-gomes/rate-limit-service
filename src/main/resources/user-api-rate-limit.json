@@ -1,0 +1,7 @@
+[
+	{
+		"userID": "client-id",
+		"apiName": "GET /records",
+		"rateLimitPerSecond": 20
+	}
+]
