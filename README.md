@@ -17,6 +17,7 @@
 #### Run the rest server:
 #### > java -jar target/rate-limit-service-0.0.1-SNAPSHOT.jar --spring.config.location=src/main/resources/application.properties
 
+#### Alternatively, for build and deployment of code use startUpService.bat
 
 ## Building the code on Eclipse:
 
