@@ -11,6 +11,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.assertj.core.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,11 @@ import com.blue.optima.assignment.controller.intercept.factory.RateLimitHandlerF
 import com.blue.optima.assignment.controller.intercept.service.RateLimitHandler;
 import com.blue.optima.assignment.service.validator.ApiValidator;
 
+/**
+ * 
+ * @author Jacob Gomes
+ *
+ */
 @Component
 public class ControllerFilter implements Filter {
 
@@ -39,13 +45,18 @@ public class ControllerFilter implements Filter {
 	
 	private Boolean checkOnlyActiveThread;
 	
+	private String urlsToBeExempted;
+	
+	private String[] urlsToBeExemptedArray;
+	
 	@Autowired
 	public ControllerFilter(RateLimitHandler rateLimitHandler,
 			@Value("${request.rate.limit.handler.type:CACHE}") String rateLimitHandlerType,
 			RateLimitHandlerFactory rateLimitHandlerFactory,
 			@Value("${request.default.rate.limit.per.second:10}") Long defaultRequestRateLimitPerSecond,
 			@Value("${request.resolution.of.time.in.second:1}")  Long resolutionOfTimeInSeconds,
-			@Value("${check.only.active.thread:false}")  Boolean checkOnlyActiveThread) {
+			@Value("${check.only.active.thread:false}")  Boolean checkOnlyActiveThread,
+			@Value("${request.url.exempted}")  String urlsToBeExempted) {
 		super();
 		this.rateLimitHandler = rateLimitHandler;
 		this.rateLimitHandlerType = rateLimitHandlerType;
@@ -53,6 +64,7 @@ public class ControllerFilter implements Filter {
 		this.defaultRequestRateLimitPerSecond = defaultRequestRateLimitPerSecond;
 		this.resolutionOfTimeInSeconds = resolutionOfTimeInSeconds;
 		this.checkOnlyActiveThread = checkOnlyActiveThread;
+		this.urlsToBeExempted = urlsToBeExempted;
 	}
 
 	@PostConstruct
@@ -60,6 +72,7 @@ public class ControllerFilter implements Filter {
 		rateLimitHandler = rateLimitHandlerFactory.createHandler(rateLimitHandlerType);
 		rateLimitHandler.setDefaultRequestRateLimit(defaultRequestRateLimitPerSecond);
 		rateLimitHandler.setResolutionOfTimeInSeconds(resolutionOfTimeInSeconds);
+		urlsToBeExemptedArray = urlsToBeExempted.split(",");
 	}
 
 	@Override
@@ -68,10 +81,17 @@ public class ControllerFilter implements Filter {
 			FilterChain chain) throws IOException, ServletException{
 		Boolean isRequestAllowed;
 		Long initialTime = System.currentTimeMillis();
+		Boolean isUrlExempted;
 		logger.info("Checking is this Request allowed...");
 
 		HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 		HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+		
+		isUrlExempted = isUrlExempted(httpServletRequest,urlsToBeExemptedArray);
+		
+		if(isUrlExempted) {
+			chain.doFilter(httpServletRequest, response);
+		}
 		
 		ApiValidator.validateRequestForUserIDHeader(httpServletRequest);
 		
@@ -92,6 +112,15 @@ public class ControllerFilter implements Filter {
 		}
 		
 		logger.info("Time taken to execute the service: {}", System.currentTimeMillis() - initialTime);
+	}
+
+	private Boolean isUrlExempted(HttpServletRequest httpServletRequest , String[] urlsToBeExemptedArray) {
+		if(null == urlsToBeExemptedArray || urlsToBeExemptedArray.length == 0) {
+			return false;
+		}
+		
+		return Arrays.asList(urlsToBeExemptedArray).contains(httpServletRequest.getRequestURI());
+		
 	}
 	
 

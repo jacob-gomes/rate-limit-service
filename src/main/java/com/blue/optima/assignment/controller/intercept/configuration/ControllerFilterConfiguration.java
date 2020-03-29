@@ -22,7 +22,7 @@ public class ControllerFilterConfiguration {
 		FilterRegistrationBean<ControllerFilter> bean = new FilterRegistrationBean<>();
 
 		bean.setFilter(controllerFilter);
-		bean.addUrlPatterns("/*");
+		bean.addUrlPatterns("/records/*");
 
 		return bean;
 	}
