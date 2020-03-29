@@ -31,7 +31,7 @@
 #### Refresh the project in Eclipse, do Maven update if needed
 
 ## Running the code on Eclipse:
-#### Go To Toolbar Click Run -> Run Configurations... -> Java Application
+#### After building the code on Eclipse -> Go To Toolbar Click Run -> Run Configurations... -> Java Application
 #### A new dialog box opens -> Fill the following attribute
 #### Name: <PROPER_NAME>, Project: rate-limit-service-master, Main class: com.blue.optima.assignment.App
 #### Click on Argument and fill 'Program Arguments' with --spring.config.location=src/main/resources/application.properties
