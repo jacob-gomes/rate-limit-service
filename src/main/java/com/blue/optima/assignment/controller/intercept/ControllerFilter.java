@@ -56,7 +56,7 @@ public class ControllerFilter implements Filter {
 			@Value("${request.default.rate.limit.per.second:10}") Long defaultRequestRateLimitPerSecond,
 			@Value("${request.resolution.of.time.in.second:1}")  Long resolutionOfTimeInSeconds,
 			@Value("${check.only.active.thread:false}")  Boolean checkOnlyActiveThread,
-			@Value("${request.url.exempted}")  String urlsToBeExempted) {
+			@Value("${request.url.exempted: }")  String urlsToBeExempted) {
 		super();
 		this.rateLimitHandler = rateLimitHandler;
 		this.rateLimitHandlerType = rateLimitHandlerType;
